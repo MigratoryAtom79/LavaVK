@@ -46,6 +46,7 @@ namespace LavaVK {
      */
     class PipelineLayout {
     public:
+        PipelineLayout() = default;
         /**
          * @brief Constructs a pipeline layout.
          * @param device Reference to the LavaVK logical device.
@@ -67,6 +68,32 @@ namespace LavaVK {
 
         PipelineLayout &operator=(const PipelineLayout &) = delete;
 
+        PipelineLayout(PipelineLayout &&other) noexcept
+            : m_device(other.m_device),
+              m_layout(other.m_layout)
+        {
+            // Reset source so its destructor won't free the handle
+            other.m_layout = VK_NULL_HANDLE;
+            other.m_device = nullptr;
+        }
+
+        PipelineLayout &operator=(PipelineLayout &&other) noexcept {
+            if (this != &other) {
+                // 1. Destroy existing resource owned by this object
+                if (m_layout != VK_NULL_HANDLE && m_device != nullptr) {
+                    vkDestroyPipelineLayout(m_device->native(), m_layout, nullptr);
+                }
+
+                // 2. Transfer ownership from other
+                m_device = other.m_device;
+                m_layout = other.m_layout;
+
+                // 3. Invalidate source
+                other.m_layout = VK_NULL_HANDLE;
+                other.m_device = nullptr;
+            }
+            return *this;
+        }
         /**
          * @brief Gets the native Vulkan `VkPipelineLayout` handle.
          * @return Native VkPipelineLayout handle.
@@ -74,7 +101,7 @@ namespace LavaVK {
         [[nodiscard]] VkPipelineLayout native() const { return m_layout; }
 
     private:
-        Device &m_device;
+        Device *m_device;
         VkPipelineLayout m_layout{VK_NULL_HANDLE};
     };
 
@@ -102,6 +129,7 @@ namespace LavaVK {
      */
     class RenderPass {
     public:
+        RenderPass() = default;
         /**
          * @brief Helper constructor for a standard single-subpass color + depth render pass.
          * @param device Reference to the LavaVK logical device.
@@ -110,7 +138,7 @@ namespace LavaVK {
          * @param samples Multisample count flag (defaults to 1 sample).
          * @throw std::runtime_error If `vkCreateRenderPass` fails.
          */
-        RenderPass(Device &device, Format colorFormat,
+        RenderPass(Device *device, Format colorFormat,
                    Format depthFormat = Format(ChannelOrder::Undefined, BitDepth::Undefined, NumericType::Undefined),
                    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT);
 
@@ -125,7 +153,7 @@ namespace LavaVK {
          * @param createInfo Raw Vulkan `VkRenderPassCreateInfo` structure.
          * @throw std::runtime_error If `vkCreateRenderPass` fails.
          */
-        RenderPass(Device &device, const VkRenderPassCreateInfo &createInfo);
+        RenderPass(Device *device, const VkRenderPassCreateInfo &createInfo);
 
         /**
          * @brief Destroys the underlying `VkRenderPass`.
@@ -136,6 +164,26 @@ namespace LavaVK {
         RenderPass(const RenderPass &) = delete;
 
         RenderPass &operator=(const RenderPass &) = delete;
+
+        RenderPass(RenderPass&& other) noexcept
+        {
+            m_device = other.m_device;
+            m_renderPass = other.m_renderPass;
+            m_colorFormat = other.m_colorFormat;
+            m_depthFormat = other.m_depthFormat;
+
+            other.m_renderPass = VK_NULL_HANDLE;
+        }
+
+        RenderPass &operator=(RenderPass && other) noexcept {
+            m_device = other.m_device;
+            m_renderPass = other.m_renderPass;
+            m_colorFormat = other.m_colorFormat;
+            m_depthFormat = other.m_depthFormat;
+
+            other.m_renderPass = VK_NULL_HANDLE;
+            return *this;
+        }
 
         /**
          * @brief Get color format.
@@ -157,7 +205,7 @@ namespace LavaVK {
         [[nodiscard]] VkRenderPass native() const { return m_renderPass; }
 
     private:
-        Device &m_device;
+        Device *m_device;
         VkRenderPass m_renderPass{VK_NULL_HANDLE};
         VkFormat m_depthFormat{VK_FORMAT_UNDEFINED};
         VkFormat m_colorFormat{VK_FORMAT_UNDEFINED};
@@ -317,6 +365,7 @@ namespace LavaVK {
      */
     class GraphicsPipeline {
     public:
+        GraphicsPipeline() = default;
         /**
          * @brief Constructs and compiles a native Vulkan graphics pipeline.
          * @param device Reference to the LavaVK logical device.
@@ -369,7 +418,7 @@ namespace LavaVK {
         }
 
     private:
-        Device &m_device;
+        Device *m_device;
         VkPipeline m_pipeline = VK_NULL_HANDLE;
     };
 
@@ -458,6 +507,7 @@ namespace LavaVK {
      */
     class ComputePipeline {
     public:
+        ComputePipeline() = default;
         /**
          * @brief Constructs and compiles a native Vulkan compute pipeline.
          * @param device Reference to the LavaVK logical device.
@@ -508,7 +558,7 @@ namespace LavaVK {
         }
 
     private:
-        Device &m_device;
+        Device *m_device;
         VkPipeline m_pipeline = VK_NULL_HANDLE;
     };
 

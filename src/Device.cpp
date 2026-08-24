@@ -437,28 +437,48 @@ namespace LavaVK {
         }
     }
 
-    Device::Device(Device &&other) noexcept
-        : m_physicalDevice(other.m_physicalDevice),
-          m_device(other.m_device),
-          m_queues(std::move(other.m_queues)),
-          m_queueFamilies(std::move(other.m_queueFamilies)) {
+    Device::Device(Device&& other) noexcept
+    : m_physicalDevice(other.m_physicalDevice),
+      m_device(other.m_device),
+      m_queues(std::move(other.m_queues)),
+      m_queueFamilies(std::move(other.m_queueFamilies)),
+      m_commandPools(std::move(other.m_commandPools))
+    {
+        for (auto& pool : m_commandPools)
+        {
+            pool.second->setDevice(this);
+        }
+
         other.m_physicalDevice = VK_NULL_HANDLE;
         other.m_device = VK_NULL_HANDLE;
     }
 
-    Device &Device::operator=(Device &&other) noexcept {
-        if (this != &other) {
+    Device& Device::operator=(Device&& other) noexcept
+    {
+        if (this != &other)
+        {
             if (m_device != VK_NULL_HANDLE)
+            {
+                m_commandPools.clear();
                 vkDestroyDevice(m_device, nullptr);
+            }
 
             m_physicalDevice = other.m_physicalDevice;
             m_device = other.m_device;
+
             m_queues = std::move(other.m_queues);
             m_queueFamilies = std::move(other.m_queueFamilies);
+            m_commandPools = std::move(other.m_commandPools);
+
+            for (auto& pool : m_commandPools)
+            {
+                pool.second->setDevice(this);
+            }
 
             other.m_physicalDevice = VK_NULL_HANDLE;
             other.m_device = VK_NULL_HANDLE;
         }
+
         return *this;
     }
 

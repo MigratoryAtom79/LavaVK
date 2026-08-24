@@ -199,15 +199,15 @@ namespace LavaVK {
         }
     }
 
-    void Buffer::upload(const void *data, size_t bytes) {
-        if (bytes > m_size) {
-            throw std::out_of_range("LavaVK::Buffer::upload - Upload size exceeds buffer capacity!");
+    void Buffer::upload(const void *data, size_t bytes, size_t offset) {
+        if (offset + bytes > m_size) {
+            throw std::out_of_range("LavaVK::Buffer::upload - Upload range exceeds buffer capacity!");
         }
 
         bool wasMapped = (m_mapped != nullptr);
         void *ptr = wasMapped ? m_mapped : map();
 
-        std::memcpy(ptr, data, bytes);
+        std::memcpy(static_cast<uint8_t *>(ptr) + offset, data, bytes);
 
         if (!wasMapped) {
             unmap();

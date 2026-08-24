@@ -22,11 +22,11 @@ namespace LavaVK {
      * when recording #CommandBuffer::drawIndexedIndirect().
      */
     struct IndexedIndirectCommand {
-        uint32_t indexCount; /**< Number of indices to draw. */
-        uint32_t instanceCount; /**< Number of instances to draw. */
-        uint32_t firstIndex; /**< First index within the bound index buffer. */
-        int32_t vertexOffset; /**< Value added to vertex indices before indexing into the vertex buffer. */
-        uint32_t firstInstance; /**< Instance ID of the first instance. */
+        uint32_t indexCount = 0; /**< Number of indices to draw. */
+        uint32_t instanceCount = 1; /**< Number of instances to draw. */
+        uint32_t firstIndex = 0; /**< First index within the bound index buffer. */
+        int32_t vertexOffset = 0; /**< Value added to vertex indices before indexing into the vertex buffer. */
+        uint32_t firstInstance = 0; /**< Instance ID of the first instance. */
     };
 
     /**
@@ -205,7 +205,7 @@ namespace LavaVK {
 
         void endRendering() const;
 
-        void beginRendering(RenderingInfo& info) const;
+        void beginRendering(RenderingInfo &info) const;
 
         /**
          * @brief Records a non-indexed draw command.
@@ -393,6 +393,72 @@ namespace LavaVK {
         void setViewportAndScissor(VkExtent2D extent) const;
 
         /**
+ * @brief Records a buffer memory barrier using LavaVK enums.
+ * @details Wraps `vkCmdPipelineBarrier` for the common case of a single
+ * buffer memory barrier, transitioning a subrange of @p buffer between
+ * pipeline stages/access masks. Queue family ownership is left unchanged (`VK_QUEUE_FAMILY_IGNORED`).
+ * @param buffer Native handle of the Vulkan buffer being synchronized.
+ * @param srcStage Pipeline stage(s) that must complete before the barrier.
+ * @param dstStage Pipeline stage(s) that must wait on the barrier.
+ * @param srcAccess Access types performed by @p srcStage that must be made visible.
+ * @param dstAccess Access types performed by @p dstStage that must wait for those writes.
+ * @param offset Start offset in bytes of the buffer range (default: 0).
+ * @param size Size in bytes of the buffer range (default: VK_WHOLE_SIZE).
+ */
+        void pipelineBarrier(
+            VkBuffer buffer,
+            PipelineStage srcStage,
+            PipelineStage dstStage,
+            AccessFlagBits srcAccess,
+            AccessFlagBits dstAccess,
+            VkDeviceSize offset = 0,
+            VkDeviceSize size = VK_WHOLE_SIZE
+        ) const {
+            VkBufferMemoryBarrier barrier{VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER};
+            barrier.srcAccessMask = static_cast<VkAccessFlags>(srcAccess);
+            barrier.dstAccessMask = static_cast<VkAccessFlags>(dstAccess);
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.buffer = buffer;
+            barrier.offset = offset;
+            barrier.size = size;
+
+            vkCmdPipelineBarrier(
+                m_buffer,
+                static_cast<VkPipelineStageFlags>(srcStage),
+                static_cast<VkPipelineStageFlags>(dstStage),
+                0,
+                0, nullptr,
+                1, &barrier,
+                0, nullptr
+            );
+        }
+
+        /**
+         * @brief Convenience overload accepting a LavaVK #Buffer wrapper.
+         * @details Equivalent to the `VkBuffer` overload above, using @p buffer's
+         * native handle. See that overload for parameter details.
+         * @param buffer The LavaVK #Buffer being synchronized.
+         * @param srcStage Pipeline stage(s) that must complete before the barrier.
+         * @param dstStage Pipeline stage(s) that must wait on the barrier.
+         * @param srcAccess Access types performed by @p srcStage that must be made visible.
+         * @param dstAccess Access types performed by @p dstStage that must wait for those writes.
+         * @param offset Start offset in bytes of the buffer range (default: 0).
+         * @param size Size in bytes of the buffer range (default: VK_WHOLE_SIZE).
+         */
+        void pipelineBarrier(
+            const Buffer &buffer,
+            PipelineStage srcStage,
+            PipelineStage dstStage,
+            AccessFlagBits srcAccess,
+            AccessFlagBits dstAccess,
+            VkDeviceSize offset = 0,
+            VkDeviceSize size = VK_WHOLE_SIZE
+        ) const {
+            pipelineBarrier(buffer.native(), srcStage, dstStage, srcAccess, dstAccess, offset, size);
+        }
+
+        /**
          * @brief Records an image layout transition and memory barrier using LavaVK enums.
          * @details Wraps `vkCmdPipelineBarrier` for the common case of a single
          * image memory barrier, transitioning @p image from @p oldLayout to
@@ -417,7 +483,7 @@ namespace LavaVK {
             AccessFlagBits srcAccess,
             AccessFlagBits dstAccess,
             ImageAspectFlagBits aspectMask = ImageAspectFlagBits::COLOR_BIT
-        ) {
+        ) const {
             VkImageMemoryBarrier barrier{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
             barrier.oldLayout = static_cast<VkImageLayout>(oldLayout);
             barrier.newLayout = static_cast<VkImageLayout>(newLayout);
@@ -465,7 +531,7 @@ namespace LavaVK {
             AccessFlagBits srcAccess,
             AccessFlagBits dstAccess,
             ImageAspectFlagBits aspectMask = ImageAspectFlagBits::COLOR_BIT
-        ) {
+        ) const {
             pipelineBarrier(image.image(), oldLayout, newLayout, srcStage, dstStage, srcAccess, dstAccess, aspectMask);
         }
 
@@ -654,8 +720,12 @@ namespace LavaVK {
          */
         [[nodiscard]] VkCommandPool native() const { return m_pool; }
 
+        void setDevice(Device *device) {
+            m_device = device;
+        }
+
     private:
-        Device &m_device;
+        Device *m_device;
         VkCommandPool m_pool = VK_NULL_HANDLE;
         std::vector<CommandBuffer> m_allocatedBuffers;
     };

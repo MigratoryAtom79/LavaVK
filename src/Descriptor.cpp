@@ -28,7 +28,7 @@ namespace LavaVK {
 
     DescriptorSetLayout::DescriptorSetLayout(Device &device,
                                              std::unordered_map<uint32_t, DescriptorSetLayoutBinding> bindings)
-        : m_device(device), m_bindings(bindings) {
+        : m_device(&device), m_bindings(bindings) {
         std::vector<VkDescriptorSetLayoutBinding> vkBindings;
         vkBindings.reserve(m_bindings.size());
 
@@ -48,14 +48,14 @@ namespace LavaVK {
         createInfo.bindingCount = static_cast<uint32_t>(vkBindings.size());
         createInfo.pBindings = vkBindings.data();
 
-        if (vkCreateDescriptorSetLayout(m_device.native(), &createInfo, nullptr, &m_layout) != VK_SUCCESS) {
+        if (vkCreateDescriptorSetLayout(m_device->native(), &createInfo, nullptr, &m_layout) != VK_SUCCESS) {
             LAVAVK_ERROR("[LavaVK ERROR] Failed to create descriptor set layout!");
         }
     }
 
     DescriptorSetLayout::~DescriptorSetLayout() {
         if (m_layout != VK_NULL_HANDLE) {
-            vkDestroyDescriptorSetLayout(m_device.native(), m_layout, nullptr);
+            vkDestroyDescriptorSetLayout(m_device->native(), m_layout, nullptr);
         }
     }
 
@@ -92,7 +92,7 @@ namespace LavaVK {
         uint32_t maxSets,
         VkDescriptorPoolCreateFlags flags,
         const std::vector<VkDescriptorPoolSize> &poolSizes)
-        : m_device(device) {
+        : m_device(&device) {
         VkDescriptorPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
@@ -100,14 +100,14 @@ namespace LavaVK {
         poolInfo.maxSets = maxSets;
         poolInfo.flags = flags;
 
-        if (vkCreateDescriptorPool(m_device.native(), &poolInfo, nullptr, &m_pool) != VK_SUCCESS) {
+        if (vkCreateDescriptorPool(m_device->native(), &poolInfo, nullptr, &m_pool) != VK_SUCCESS) {
             LAVAVK_ERROR("[LavaVK ERROR] Failed to create descriptor pool!");
         }
     }
 
     DescriptorPool::~DescriptorPool() {
         if (m_pool != VK_NULL_HANDLE) {
-            vkDestroyDescriptorPool(m_device.native(), m_pool, nullptr);
+            vkDestroyDescriptorPool(m_device->native(), m_pool, nullptr);
         }
     }
 
@@ -121,7 +121,7 @@ namespace LavaVK {
         allocInfo.pSetLayouts = &vkLayout;
         allocInfo.descriptorSetCount = 1;
 
-        if (vkAllocateDescriptorSets(m_device.native(), &allocInfo, &descriptorSet) != VK_SUCCESS) {
+        if (vkAllocateDescriptorSets(m_device->native(), &allocInfo, &descriptorSet) != VK_SUCCESS) {
             LAVAVK_ERROR("Failed to allocate descriptor set from pool!");
         }
 
@@ -129,7 +129,7 @@ namespace LavaVK {
     }
 
     void DescriptorPool::freeDescriptorSets(const std::vector<VkDescriptorSet> &descriptorSets) const {
-        vkFreeDescriptorSets(m_device.native(), m_pool, static_cast<uint32_t>(descriptorSets.size()),
+        vkFreeDescriptorSets(m_device->native(), m_pool, static_cast<uint32_t>(descriptorSets.size()),
                              descriptorSets.data());
     }
 
@@ -203,8 +203,33 @@ namespace LavaVK {
         );
     }
 
+    DescriptorPool::DescriptorPool(DescriptorPool &&other) noexcept
+    : m_device(other.m_device),
+      m_pool(std::exchange(other.m_pool, VK_NULL_HANDLE))
+    {
+        other.m_device = nullptr;
+    }
+
+    // Move Assignment Operator
+    DescriptorPool &DescriptorPool::operator=(DescriptorPool &&other) noexcept {
+        if (this != &other) {
+            // 1. Clean up existing resource if valid
+            if (m_pool != VK_NULL_HANDLE && m_device != nullptr) {
+                vkDestroyDescriptorPool(m_device->native(), m_pool, nullptr);
+            }
+
+            // 2. Steal resources from 'other'
+            m_device = other.m_device;
+            m_pool = std::exchange(other.m_pool, VK_NULL_HANDLE);
+
+            // 3. Nullify source device pointer
+            other.m_device = nullptr;
+        }
+        return *this;
+    }
+
     BindlessTextureSet::BindlessTextureSet(Device &device)
-        : m_device(device),
+        : m_device(&device),
           m_layout(
               device,
               std::unordered_map<uint32_t, DescriptorSetLayoutBinding>{
@@ -291,6 +316,6 @@ namespace LavaVK {
         write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         write.pImageInfo = &imageInfo.native();
 
-        vkUpdateDescriptorSets(m_device.native(), 1, &write, 0, nullptr);
+        vkUpdateDescriptorSets(m_device->native(), 1, &write, 0, nullptr);
     }
 }

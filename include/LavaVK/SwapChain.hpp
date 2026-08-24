@@ -32,6 +32,7 @@ namespace LavaVK {
      */
     class SwapChain {
     public:
+        SwapChain() = default;
         /**
          * @brief Constructs a LavaVK SwapChain instance and creates internal synchronization objects.
          * Queries physical device capabilities, chooses optimal surface formats, present modes,
@@ -48,7 +49,7 @@ namespace LavaVK {
         SwapChain(
             Device &device,
             Surface &surface,
-            RenderPass* renderPass,
+            RenderPass& renderPass,
             VkFormat colorFormat,
             VkFormat depthFormat,
             VkExtent2D extent);
@@ -179,7 +180,7 @@ namespace LavaVK {
          * @return Const reference to LavaVK::Surface.
          */
         [[nodiscard]] const Surface &surface() const {
-            return m_surface;
+            return *m_surface;
         }
 
         /**
@@ -250,8 +251,8 @@ namespace LavaVK {
          */
         void cleanup();
 
-        Device &m_device; ///< Reference to logical device wrapper.
-        Surface &m_surface; ///< Reference to presentation surface wrapper.
+        Device *m_device; ///< Reference to logical device wrapper.
+        Surface *m_surface; ///< Reference to presentation surface wrapper.
         RenderPass *m_renderPass; ///< Pointer to render pass used to build framebuffers.
 
         VkSwapchainKHR m_swapchain = VK_NULL_HANDLE; ///< Native Vulkan swapchain handle.

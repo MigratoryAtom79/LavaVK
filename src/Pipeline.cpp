@@ -7,7 +7,7 @@ namespace LavaVK {
     PipelineLayout::PipelineLayout(Device &device,
                                    const std::vector<const DescriptorSetLayout *> &descriptorSetLayouts,
                                    const std::vector<PushConstantRange> &pushConstantRanges)
-        : m_device(device) {
+        : m_device(&device) {
         // Extract raw descriptor set layout handles
         std::vector<VkDescriptorSetLayout> nativeLayouts;
         nativeLayouts.reserve(descriptorSetLayouts.size());
@@ -37,19 +37,19 @@ namespace LavaVK {
         createInfo.pushConstantRangeCount = static_cast<uint32_t>(vkPushConstantRanges.size());
         createInfo.pPushConstantRanges = vkPushConstantRanges.empty() ? nullptr : vkPushConstantRanges.data();
 
-        if (vkCreatePipelineLayout(m_device.native(), &createInfo, nullptr, &m_layout) != VK_SUCCESS) {
+        if (vkCreatePipelineLayout(m_device->native(), &createInfo, nullptr, &m_layout) != VK_SUCCESS) {
             LAVAVK_ERROR("[LavaVK ERROR] Failed to create pipeline layout!");
         }
     }
 
     PipelineLayout::~PipelineLayout() {
         if (m_layout != VK_NULL_HANDLE) {
-            vkDestroyPipelineLayout(m_device.native(), m_layout, nullptr);
+            vkDestroyPipelineLayout(m_device->native(), m_layout, nullptr);
         }
     }
 
 
-    RenderPass::RenderPass(Device &device, Format colorFormat, Format depthFormat, VkSampleCountFlagBits samples)
+    RenderPass::RenderPass(Device *device, Format colorFormat, Format depthFormat, VkSampleCountFlagBits samples)
         : m_device(device), m_colorFormat(colorFormat.native()), m_depthFormat(depthFormat.native()) {
         // Color Attachment
         VkAttachmentDescription colorAttachment{};
@@ -111,28 +111,28 @@ namespace LavaVK {
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-        if (vkCreateRenderPass(m_device.native(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS) {
+        if (vkCreateRenderPass(m_device->native(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS) {
             LAVAVK_ERROR("[LavaVK ERROR] Failed to create render pass!");
         }
     }
 
-    RenderPass::RenderPass(Device &device, const VkRenderPassCreateInfo &createInfo)
+    RenderPass::RenderPass(Device *device, const VkRenderPassCreateInfo &createInfo)
         : m_device(device) {
-        if (vkCreateRenderPass(m_device.native(), &createInfo, nullptr, &m_renderPass) != VK_SUCCESS) {
+        if (vkCreateRenderPass(m_device->native(), &createInfo, nullptr, &m_renderPass) != VK_SUCCESS) {
             LAVAVK_ERROR("[LavaVK ERROR] Failed to create render pass!");
         }
     }
 
     RenderPass::~RenderPass() {
         if (m_renderPass != VK_NULL_HANDLE) {
-            vkDestroyRenderPass(m_device.native(), m_renderPass, nullptr);
+            vkDestroyRenderPass(m_device->native(), m_renderPass, nullptr);
         }
     }
 
     GraphicsPipeline::GraphicsPipeline(
         Device &device,
         const GraphicsPipelineCreateInfo &info)
-        : m_device(device) {
+        : m_device(&device) {
         if (!info.vertexShader)
             LAVAVK_ERROR("[LavaVK ERROR] Vertex shader is null.");
 
@@ -335,7 +335,7 @@ namespace LavaVK {
         }
 
         if (vkCreateGraphicsPipelines(
-                m_device.native(),
+                m_device->native(),
                 VK_NULL_HANDLE,
                 1,
                 &pipelineInfo,
@@ -347,7 +347,7 @@ namespace LavaVK {
 
     GraphicsPipeline::~GraphicsPipeline() {
         if (m_pipeline != VK_NULL_HANDLE)
-            vkDestroyPipeline(m_device.native(), m_pipeline, nullptr);
+            vkDestroyPipeline(m_device->native(), m_pipeline, nullptr);
     }
 
     GraphicsPipeline::GraphicsPipeline(GraphicsPipeline &&other) noexcept
@@ -359,7 +359,7 @@ namespace LavaVK {
     GraphicsPipeline &GraphicsPipeline::operator=(GraphicsPipeline &&other) noexcept {
         if (this != &other) {
             if (m_pipeline != VK_NULL_HANDLE)
-                vkDestroyPipeline(m_device.native(), m_pipeline, nullptr);
+                vkDestroyPipeline(m_device->native(), m_pipeline, nullptr);
 
             m_pipeline = other.m_pipeline;
             other.m_pipeline = VK_NULL_HANDLE;
@@ -376,7 +376,7 @@ namespace LavaVK {
     }
 
     ComputePipeline::ComputePipeline(Device &device, const ComputePipelineCreateInfo &info)
-    : m_device(device)
+    : m_device(&device)
     {
         // 1. Configure the compute shader stage
         VkPipelineShaderStageCreateInfo shaderStageInfo{};
@@ -395,7 +395,7 @@ namespace LavaVK {
 
         // 3. Create the Vulkan pipeline
         if (vkCreateComputePipelines(
-                m_device.native(),
+                m_device->native(),
                 VK_NULL_HANDLE,
                 1,
                 &pipelineInfo,
@@ -414,7 +414,7 @@ namespace LavaVK {
     ComputePipeline& ComputePipeline::operator=(ComputePipeline&& other) noexcept {
         if (this != &other) {
             if (m_pipeline != VK_NULL_HANDLE) {
-                vkDestroyPipeline(m_device.native(), m_pipeline, nullptr);
+                vkDestroyPipeline(m_device->native(), m_pipeline, nullptr);
             }
             m_pipeline = std::exchange(other.m_pipeline, VK_NULL_HANDLE);
         }
@@ -423,7 +423,7 @@ namespace LavaVK {
 
     ComputePipeline::~ComputePipeline() {
         if (m_pipeline != VK_NULL_HANDLE) {
-            vkDestroyPipeline(m_device.native(), m_pipeline, nullptr);
+            vkDestroyPipeline(m_device->native(), m_pipeline, nullptr);
         }
     }
 

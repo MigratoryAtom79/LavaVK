@@ -165,23 +165,23 @@ namespace LavaVK {
         QueueType queueType,
         bool transient,
         bool resetIndividualBuffers)
-        : m_device(device) {
+        : m_device(&device) {
         VkCommandPoolCreateInfo poolInfo{.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
-        poolInfo.queueFamilyIndex = m_device.getQueueFamily(queueType);
+        poolInfo.queueFamilyIndex = m_device->getQueueFamily(queueType);
 
         VkCommandPoolCreateFlags flags = 0;
         if (transient) flags |= VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
         if (resetIndividualBuffers) flags |= VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         poolInfo.flags = flags;
 
-        if (vkCreateCommandPool(m_device.native(), &poolInfo, nullptr, &m_pool) != VK_SUCCESS) {
+        if (vkCreateCommandPool(m_device->native(), &poolInfo, nullptr, &m_pool) != VK_SUCCESS) {
             LAVAVK_ERROR("Failed to create command pool!");
         }
     }
 
     CommandPool::~CommandPool() {
         if (m_pool != VK_NULL_HANDLE) {
-            vkDestroyCommandPool(m_device.native(), m_pool, nullptr);
+            vkDestroyCommandPool(m_device->native(), m_pool, nullptr);
             m_pool = VK_NULL_HANDLE;
         }
     }
@@ -196,7 +196,7 @@ namespace LavaVK {
     CommandPool &CommandPool::operator=(CommandPool &&other) noexcept {
         if (this != &other) {
             if (m_pool != VK_NULL_HANDLE) {
-                vkDestroyCommandPool(m_device.native(), m_pool, nullptr);
+                vkDestroyCommandPool(m_device->native(), m_pool, nullptr);
             }
             m_pool = other.m_pool;
             m_allocatedBuffers = std::move(other.m_allocatedBuffers);
@@ -219,7 +219,7 @@ namespace LavaVK {
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount = count;
 
-        if (vkAllocateCommandBuffers(m_device.native(), &allocInfo, vkBuffers.data()) != VK_SUCCESS) {
+        if (vkAllocateCommandBuffers(m_device->native(), &allocInfo, vkBuffers.data()) != VK_SUCCESS) {
             LAVAVK_ERROR("Failed to allocate command buffers!");
         }
 
@@ -227,7 +227,7 @@ namespace LavaVK {
 
         for (uint32_t i = 0; i < count; ++i) {
             CommandBuffer buf;
-            buf.m_device = &m_device;
+            buf.m_device = m_device;
             buf.m_pool = m_pool;
             buf.m_buffer = vkBuffers[i];
             m_allocatedBuffers.push_back(buf);
@@ -251,7 +251,7 @@ namespace LavaVK {
     }
 
     void CommandPool::reset() const {
-        if (vkResetCommandPool(m_device.native(), m_pool, 0) != VK_SUCCESS) {
+        if (vkResetCommandPool(m_device->native(), m_pool, 0) != VK_SUCCESS) {
             LAVAVK_ERROR("Failed to reset command pool!");
         }
     }

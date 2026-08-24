@@ -236,9 +236,10 @@ namespace LavaVK {
          * see #map() for applicability.
          * @param data Pointer to the source data to copy from.
          * @param bytes Number of bytes to copy, starting at the beginning of the buffer.
+         * @param offset
          * @throw std::runtime_error If the buffer is not host-visible or mapping fails.
          */
-        void upload(const void *data, size_t bytes);
+        void upload(const void *data, size_t bytes, size_t offset = 0);
 
         /**
          * @brief Uploads a single object's bytes into the buffer.
@@ -390,6 +391,7 @@ namespace LavaVK {
      */
     class VertexLayout {
     public:
+        VertexLayout() = default;
         /**
          * @brief Creates a vertex layout with an initial binding.
          */

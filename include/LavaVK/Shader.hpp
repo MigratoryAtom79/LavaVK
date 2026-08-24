@@ -113,6 +113,8 @@ namespace LavaVK {
 
         Shader &operator=(const Shader &) = delete;
 
+        Shader(Shader&&) = default;
+
         /**
          * @brief Retrieves the native Vulkan `VkShaderModule` handle.
          * @return Raw VkShaderModule handle.

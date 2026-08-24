@@ -96,6 +96,7 @@ namespace LavaVK {
      */
     class DescriptorSetLayout {
     public:
+        DescriptorSetLayout() = default;
         /**
          * @brief Fluent builder helper for constructing `DescriptorSetLayout` instances.
          */
@@ -150,6 +151,28 @@ namespace LavaVK {
 
         DescriptorSetLayout &operator=(const DescriptorSetLayout &) = delete;
 
+        DescriptorSetLayout(DescriptorSetLayout &&other) noexcept
+            : m_device(other.m_device),
+            m_layout(other.m_layout),
+            m_bindings(std::move(other.m_bindings))
+        {
+            other.m_layout = VK_NULL_HANDLE;
+        }
+
+        DescriptorSetLayout &operator=(DescriptorSetLayout &&other) noexcept {
+            if (this != &other) {
+                if (m_layout != VK_NULL_HANDLE) {
+                    vkDestroyDescriptorSetLayout(m_device->native(), m_layout, nullptr);
+                }
+                m_device = other.m_device;
+                m_layout = other.m_layout;
+                m_bindings = std::move(other.m_bindings);
+
+                other.m_layout = VK_NULL_HANDLE;
+            }
+            return *this;
+        }
+
         /**
          * @brief Gets the native `VkDescriptorSetLayout` handle.
          * @return Native Vulkan layout handle.
@@ -165,7 +188,7 @@ namespace LavaVK {
         }
 
     private:
-        Device &m_device;
+        Device *m_device;
         VkDescriptorSetLayout m_layout{VK_NULL_HANDLE};
         std::unordered_map<uint32_t, DescriptorSetLayoutBinding> m_bindings;
     };
@@ -196,6 +219,7 @@ namespace LavaVK {
      */
     class DescriptorPool {
     public:
+        DescriptorPool() = default;
         class Builder {
         public:
             explicit Builder(Device &device) : m_device(device) {
@@ -257,6 +281,9 @@ namespace LavaVK {
 
         DescriptorPool &operator=(const DescriptorPool &) = delete;
 
+        DescriptorPool(DescriptorPool &&other) noexcept;
+        DescriptorPool &operator=(DescriptorPool &&other) noexcept;
+
         DescriptorSet allocateDescriptorSet(const DescriptorSetLayout &layout) const;
 
         void freeDescriptorSets(const std::vector<VkDescriptorSet> &descriptorSets) const;
@@ -267,10 +294,10 @@ namespace LavaVK {
         Writer write(DescriptorSetLayout &setLayout) { return Writer(*this, setLayout); }
 
         [[nodiscard]] VkDescriptorPool native() const { return m_pool; }
-        [[nodiscard]] Device &device() const { return m_device; }
+        [[nodiscard]] Device &device() const { return *m_device; }
 
     private:
-        Device &m_device;
+        Device *m_device;
         VkDescriptorPool m_pool{VK_NULL_HANDLE};
     };
 
@@ -329,6 +356,7 @@ namespace LavaVK {
      */
     class BindlessTextureSet {
     public:
+        BindlessTextureSet() = default;
         /**
          * @brief Maximum number of textures that can be registered at once.
          * @details Determines the `descriptorCount` of the underlying array
@@ -357,8 +385,23 @@ namespace LavaVK {
         /// @{
         BindlessTextureSet(const BindlessTextureSet &) = delete;
         BindlessTextureSet &operator=(const BindlessTextureSet &) = delete;
-        BindlessTextureSet(BindlessTextureSet &&) = delete;
-        BindlessTextureSet &operator=(BindlessTextureSet &&) = delete;
+        BindlessTextureSet(BindlessTextureSet &&other)  noexcept {
+            m_device = other.m_device;
+            m_layout = std::move(other.m_layout);
+            m_pool = std::move(other.m_pool);
+            m_set = other.m_set;
+            m_textures = std::move(other.m_textures);
+            m_freeIndices = std::move(other.m_freeIndices);
+        }
+        BindlessTextureSet &operator=(BindlessTextureSet &&other) noexcept {
+            m_device = other.m_device;
+            m_layout = std::move(other.m_layout);
+            m_pool = std::move(other.m_pool);
+            m_set = other.m_set;
+            m_textures = std::move(other.m_textures);
+            m_freeIndices = std::move(other.m_freeIndices);
+            return *this;
+        }
         /// @}
 
         /**
@@ -420,7 +463,7 @@ namespace LavaVK {
          */
         void writeDescriptor(uint32_t id, Texture &texture) const;
 
-        Device &m_device;
+        Device *m_device;
 
         DescriptorSetLayout m_layout;
         std::unique_ptr<DescriptorPool> m_pool;
