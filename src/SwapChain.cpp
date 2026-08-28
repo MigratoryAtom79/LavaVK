@@ -1,10 +1,10 @@
-#include "LavaVK/SwapChain.hpp"
+#include "../include/LavaVK/SwapChain.hpp"
 
 #include <cassert>
 #include <iostream>
 
-#include "LavaVK/Queue.hpp"
-#include "LavaVK/Texture.hpp"
+#include "../include/LavaVK/Queue.hpp"
+#include "../include/LavaVK/Texture.hpp"
 
 
 namespace LavaVK {

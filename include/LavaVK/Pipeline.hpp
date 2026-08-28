@@ -10,7 +10,6 @@
 #include <array>
 #include <filesystem>
 #include <optional>
-#include <shaderc/shaderc.hpp>
 
 #include "Core.hpp"
 #include "Device.hpp"
@@ -582,9 +581,8 @@ namespace LavaVK {
         LOAD = VK_ATTACHMENT_LOAD_OP_LOAD,
         CLEAR = VK_ATTACHMENT_LOAD_OP_CLEAR,
         DONT_CARE = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-        NONE = VK_ATTACHMENT_LOAD_OP_NONE,
+        NONE = VK_ATTACHMENT_LOAD_OP_NONE_EXT,
         NONE_EXT = VK_ATTACHMENT_LOAD_OP_NONE_EXT,
-        NONE_KHR = VK_ATTACHMENT_LOAD_OP_NONE_KHR,
         MAX_ENUM = VK_ATTACHMENT_LOAD_OP_MAX_ENUM
     };
 

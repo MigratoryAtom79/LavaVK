@@ -1,7 +1,7 @@
-#include "LavaVK/Pipeline.hpp"
-#include "LavaVK/Buffer.hpp"
-#include "LavaVK/Descriptor.hpp"
-#include "LavaVK/Instance.hpp"
+#include "../include/LavaVK/Pipeline.hpp"
+#include "../include/LavaVK/Buffer.hpp"
+#include "../include/LavaVK/Descriptor.hpp"
+#include "../include/LavaVK/Instance.hpp"
 
 namespace LavaVK {
     PipelineLayout::PipelineLayout(Device &device,

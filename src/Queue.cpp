@@ -1,8 +1,8 @@
-#include "LavaVK/Queue.hpp"
+#include "../include/LavaVK/Queue.hpp"
 
-#include "LavaVK/Device.hpp"
-#include "LavaVK/Sync.hpp"
-#include "LavaVK/Error.hpp"
+#include "../include/LavaVK/Device.hpp"
+#include "../include/LavaVK/Sync.hpp"
+#include "../include/LavaVK/Error.hpp"
 
 namespace LavaVK {
     Queue::Queue(Device &device, uint32_t family) : m_family(family) {

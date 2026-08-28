@@ -2,9 +2,9 @@
 #define LAVAVK_SHADER_HPP
 
 #include <vulkan/vulkan_core.h>
-#include "shaderc/shaderc.hpp"
 #include <fstream>
 #include <filesystem>
+#include <vector>
 
 namespace LavaVK {
     class Device;

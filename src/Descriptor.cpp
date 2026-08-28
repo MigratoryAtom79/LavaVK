@@ -1,10 +1,10 @@
-#include "LavaVK/Descriptor.hpp"
+#include "../include/LavaVK/Descriptor.hpp"
 
 #include <vector>
 
-#include "LavaVK/LavaVK.hpp"
-#include "LavaVK/Shader.hpp"
-#include "LavaVK/Device.hpp"
+#include "../include/LavaVK/LavaVK.hpp"
+#include "../include/LavaVK/Shader.hpp"
+#include "../include/LavaVK/Device.hpp"
 
 namespace LavaVK {
     DescriptorSetLayout::Builder &DescriptorSetLayout::Builder::addBinding(

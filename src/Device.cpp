@@ -1,13 +1,13 @@
-#include "LavaVK/Device.hpp"
-#include "LavaVK/Queue.hpp"
-#include "LavaVK/Surface.hpp"
-#include "LavaVK/Sync.hpp"
-#include "LavaVK/Instance.hpp"
-#include "LavaVK/Queue.hpp"
-#include "LavaVK/Command.hpp"
-#include "LavaVK/LavaVK.hpp"
-#include "LavaVK/Surface.hpp"
-#include "LavaVK/Error.hpp"
+#include "../include/LavaVK/Device.hpp"
+#include "../include/LavaVK/Queue.hpp"
+#include "../include/LavaVK/Surface.hpp"
+#include "../include/LavaVK/Sync.hpp"
+#include "../include/LavaVK/Instance.hpp"
+#include "../include/LavaVK/Queue.hpp"
+#include "../include/LavaVK/Command.hpp"
+#include "../include/LavaVK/LavaVK.hpp"
+#include "../include/LavaVK/Surface.hpp"
+#include "../include/LavaVK/Error.hpp"
 
 #include <algorithm>
 #include <cstring>

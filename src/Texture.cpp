@@ -1,9 +1,9 @@
-#include "LavaVK/Texture.hpp"
-#include "LavaVK/Device.hpp"
-#include "LavaVK/Queue.hpp"
+#include "../include/LavaVK/Texture.hpp"
+#include "../include/LavaVK/Device.hpp"
+#include "../include/LavaVK/Queue.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include "../external/stb_image.h"
 #include <stdexcept>
 #include <utility>
 

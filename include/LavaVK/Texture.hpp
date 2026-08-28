@@ -74,7 +74,6 @@ namespace LavaVK {
         STENCIL_READ_ONLY_OPTIMAL = VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL, /**< Optimal for read-only stencil attachment and shader access. */
         READ_ONLY_OPTIMAL = VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL, /**< Optimal for any read-only access (attachment or shader), depth/stencil/color as applicable. */
         ATTACHMENT_OPTIMAL = VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL, /**< Optimal for use as a read/write attachment, color or depth/stencil as applicable. */
-        RENDERING_LOCAL_READ = VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ, /**< Optimal for local reads within dynamic rendering (`vkCmdBeginRendering`). */
         PRESENT_SRC_KHR = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, /**< Required layout for presenting a swapchain image to the screen. */
         VIDEO_DECODE_DST_KHR = VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR, /**< Destination of a video decode operation. */
         VIDEO_DECODE_SRC_KHR = VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR, /**< Source of a video decode operation. */
@@ -86,11 +85,7 @@ namespace LavaVK {
         VIDEO_ENCODE_SRC_KHR = VK_IMAGE_LAYOUT_VIDEO_ENCODE_SRC_KHR, /**< Source of a video encode operation. */
         VIDEO_ENCODE_DPB_KHR = VK_IMAGE_LAYOUT_VIDEO_ENCODE_DPB_KHR, /**< Decoded picture buffer for video encode. */
         ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT = VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT, /**< Optimal for attachments participating in a feedback loop. */
-        TENSOR_ALIASING_ARM = VK_IMAGE_LAYOUT_TENSOR_ALIASING_ARM, /**< ARM-specific layout for tensor memory aliasing. */
-        VIDEO_ENCODE_QUANTIZATION_MAP_KHR = VK_IMAGE_LAYOUT_VIDEO_ENCODE_QUANTIZATION_MAP_KHR, /**< Video encode quantization map layout. */
-        ZERO_INITIALIZED_EXT = VK_IMAGE_LAYOUT_ZERO_INITIALIZED_EXT, /**< Contents are guaranteed zero-initialized; valid only as the "old" layout. */
         SHADING_RATE_OPTIMAL_NV = VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV, /**< NVIDIA-specific optimal shading rate image layout. */
-        RENDERING_LOCAL_READ_KHR = VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ_KHR, /**< KHR alias of #RENDERING_LOCAL_READ. */
         DEPTH_ATTACHMENT_OPTIMAL_KHR = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL_KHR, /**< KHR alias of #DEPTH_ATTACHMENT_OPTIMAL. */
         DEPTH_READ_ONLY_OPTIMAL_KHR = VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL_KHR, /**< KHR alias of #DEPTH_READ_ONLY_OPTIMAL. */
         STENCIL_ATTACHMENT_OPTIMAL_KHR = VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL_KHR, /**< KHR alias of #STENCIL_ATTACHMENT_OPTIMAL. */

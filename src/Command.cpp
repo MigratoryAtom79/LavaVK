@@ -1,8 +1,8 @@
-#include "LavaVK/Command.hpp"
-#include "LavaVK/Device.hpp"
-#include "LavaVK/Buffer.hpp"
-#include "LavaVK/Pipeline.hpp"
-#include "LavaVK/Error.hpp"
+#include "../include/LavaVK/Command.hpp"
+#include "../include/LavaVK/Device.hpp"
+#include "../include/LavaVK/Buffer.hpp"
+#include "../include/LavaVK/Pipeline.hpp"
+#include "../include/LavaVK/Error.hpp"
 
 
 namespace LavaVK {

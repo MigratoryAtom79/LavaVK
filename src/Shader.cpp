@@ -1,6 +1,6 @@
-#include "LavaVK/Shader.hpp"
-#include "LavaVK/Device.hpp"
-#include "LavaVK/Error.hpp"
+#include "../include/LavaVK/Shader.hpp"
+#include "../include/LavaVK/Device.hpp"
+#include "../include/LavaVK/Error.hpp"
 
 
 namespace LavaVK {

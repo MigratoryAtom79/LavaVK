@@ -1,9 +1,9 @@
-#include "LavaVK/Buffer.hpp"
+#include "../include/LavaVK/Buffer.hpp"
 
-#include "LavaVK/Command.hpp"
-#include "LavaVK/Pipeline.hpp"
-#include "LavaVK/Queue.hpp"
-#include "LavaVK/Texture.hpp"
+#include "../include/LavaVK/Command.hpp"
+#include "../include/LavaVK/Pipeline.hpp"
+#include "../include/LavaVK/Queue.hpp"
+#include "../include/LavaVK/Texture.hpp"
 
 namespace LavaVK {
 

@@ -1,9 +1,9 @@
-#include "LavaVK/Sync.hpp"
+#include "../include/LavaVK/Sync.hpp"
 
-#include "LavaVK/Core.hpp"
-#include "LavaVK/Device.hpp"
-#include "LavaVK/Instance.hpp"
-#include "LavaVK/Error.hpp"
+#include "../include/LavaVK/Core.hpp"
+#include "../include/LavaVK/Device.hpp"
+#include "../include/LavaVK/Instance.hpp"
+#include "../include/LavaVK/Error.hpp"
 
 namespace LavaVK {
     Fence::Fence(Device &device, bool signaled) : m_device(device.native()) {
