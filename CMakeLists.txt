@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(LavaVK
-        VERSION 1.0.1
+        VERSION 1.0.2
         LANGUAGES CXX
 )
 
@@ -42,7 +42,7 @@ target_include_directories(LavaVK
         $<INSTALL_INTERFACE:include>
 
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/external
+        external
 )
 
 
@@ -57,6 +57,9 @@ target_compile_features(LavaVK
         cxx_std_20
 )
 
+set_target_properties(LavaVK PROPERTIES
+        POSITION_INDEPENDENT_CODE ON
+)
 
 #
 # Installation
@@ -77,7 +80,7 @@ install(
 
 
 install(
-        DIRECTORY include/
+        DIRECTORY include
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 

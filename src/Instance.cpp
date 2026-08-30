@@ -34,8 +34,15 @@ namespace LavaVK {
         }
 #endif
 
-        if (vkCreateInstance(&create, nullptr, &m_instance) != VK_SUCCESS)
-            LAVAVK_ERROR("[LavaVK ERROR] Failed to create Vulkan instance.");
+        VkResult result = vkCreateInstance(&create, nullptr, &m_instance);
+
+        if (result != VK_SUCCESS)
+        {
+            throw std::runtime_error(
+                "[LavaVK ERROR] vkCreateInstance failed with VkResult = " +
+                std::to_string(result)
+            );
+        }
     }
 
     Instance::~Instance() {
