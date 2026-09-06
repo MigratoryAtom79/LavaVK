@@ -22,12 +22,15 @@ namespace LavaVK {
         }
 
         VkPresentModeKHR chooseSwapPresentMode(
-            const std::vector<VkPresentModeKHR> &availablePresentModes) {
+            const std::vector<VkPresentModeKHR> &availablePresentModes,
+            VkPresentModeKHR preferred) {
             for (const auto &availablePresentMode: availablePresentModes) {
-                if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+                if (availablePresentMode == preferred) {
                     return availablePresentMode;
                 }
             }
+            // Fifo is the only mode the Vulkan spec guarantees every
+            // surface supports, so it's the safe universal fallback.
             return VK_PRESENT_MODE_FIFO_KHR;
         }
 
@@ -124,11 +127,12 @@ namespace LavaVK {
                                                   presentModes.data());
 
         VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(formats, m_colorFormat);
-        VkPresentModeKHR presentMode = chooseSwapPresentMode(presentModes);
+        VkPresentModeKHR presentMode = chooseSwapPresentMode(presentModes, m_presentModePreference);
         VkExtent2D swapExtent = chooseSwapExtent(capabilities, m_extent);
 
         m_format = surfaceFormat.format;
         m_extent = swapExtent;
+        m_presentMode = presentMode;
 
         uint32_t imageCount = capabilities.minImageCount + 1;
         if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
@@ -262,7 +266,7 @@ namespace LavaVK {
                 chooseSwapSurfaceFormat(formats, m_colorFormat);
 
         VkPresentModeKHR presentMode =
-                chooseSwapPresentMode(presentModes);
+                chooseSwapPresentMode(presentModes, m_presentModePreference);
 
         VkExtent2D swapExtent =
                 chooseSwapExtent(capabilities, m_extent);
@@ -270,6 +274,7 @@ namespace LavaVK {
 
         m_format = surfaceFormat.format;
         m_extent = swapExtent;
+        m_presentMode = presentMode;
 
         uint32_t imageCount = capabilities.minImageCount + 1;
 

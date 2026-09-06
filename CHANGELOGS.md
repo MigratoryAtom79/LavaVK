@@ -2,6 +2,13 @@
 
 All notable changes to LavaVK are documented here.
 
+## [1.1.0-release] — 2026-08-03
+
+> **Development status:** Released
+
+### Added
+* Added exchangeable swapchain present modes.
+
 ## [1.0.2-release] — 2026-08-03
 
 > **Development status:** Released

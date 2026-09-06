@@ -1,4 +1,4 @@
-# LavaVK 1.0.2-release
+# LavaVK 1.1.0-release
 
 > Development status: Released.
 

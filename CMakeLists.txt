@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(LavaVK
-        VERSION 1.0.2
+        VERSION 1.1.0
         LANGUAGES CXX
 )
 
@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Vulkan
 find_package(Vulkan REQUIRED)
+
+add_subdirectory(lavac)
 
 
 # LavaVK

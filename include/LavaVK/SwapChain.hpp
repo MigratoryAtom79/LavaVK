@@ -238,6 +238,38 @@ namespace LavaVK {
          */
         [[nodiscard]] VkExtent2D getLatestExtent() const;
 
+        /**
+         * @brief Sets which present mode should be requested the next time
+         * the swapchain is (re)created (e.g. via #recreate). Vulkan fixes
+         * the present mode at swapchain-creation time, so this alone does
+         * not affect the currently active swapchain - call #recreate
+         * afterward to actually apply it.
+         * @param mode Requested mode. Falls back to
+         * `VK_PRESENT_MODE_FIFO_KHR` at creation time if the surface
+         * doesn't support it (Fifo is the only mode Vulkan guarantees).
+         */
+        void setPresentModePreference(VkPresentModeKHR mode) {
+            m_presentModePreference = mode;
+        }
+
+        /**
+         * @brief The present mode that will be requested next time the
+         * swapchain is (re)created. May not match #presentMode if it
+         * hasn't been applied yet, or wasn't supported by the surface.
+         */
+        [[nodiscard]] VkPresentModeKHR presentModePreference() const {
+            return m_presentModePreference;
+        }
+
+        /**
+         * @brief The present mode actually in use by the currently active
+         * swapchain (i.e. what Vulkan granted, not necessarily what was
+         * requested via #setPresentModePreference).
+         */
+        [[nodiscard]] VkPresentModeKHR presentMode() const {
+            return m_presentMode;
+        }
+
     private:
         /**
          * @brief Allocates and initializes native VkSwapchainKHR, images, views, depth attachment, and framebuffers.
@@ -261,6 +293,11 @@ namespace LavaVK {
         VkFormat m_depthFormat = VK_FORMAT_UNDEFINED; ///< Requested depth format.
         VkFormat m_format = VK_FORMAT_UNDEFINED; ///< Selected surface color format.
         VkExtent2D m_extent{}; ///< Dimensions of swapchain images.
+
+        VkPresentModeKHR m_presentModePreference = VK_PRESENT_MODE_MAILBOX_KHR;
+        ///< Requested on next (re)creation - matches the original hardcoded default.
+        VkPresentModeKHR m_presentMode = VK_PRESENT_MODE_FIFO_KHR;
+        ///< Mode Vulkan actually granted for the currently active swapchain.
 
         std::vector<Image> m_images; ///< Wrapped swapchain color images.
         std::unique_ptr<Image> m_depthImage; ///< Dedicated depth image attachment.
