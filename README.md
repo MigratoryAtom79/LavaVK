@@ -157,13 +157,13 @@ cmake -B build -DCMAKE_PREFIX_PATH=/path/to/install
 
 ## Documentation
 
-Full API documentation is available here:
+Full API documentation is available [here](https://migratoryatom79.github.io/LavaVK/html/index.html):
 
-https://ranveerisdegoat.github.io/LavaVK/html/index.html
+
 
 ## Getting Started
 
-See the [Getting Started wiki](https://github.com/RanveerisdeGOAT/LavaVK/wiki/Getting-Started) for a step-by-step introduction to using LavaVK.
+See the [Getting Started wiki](https://github.com/MigratoryAtom79/LavaVK/wiki/Getting-Started) for a step-by-step introduction to using LavaVK.
 
 ---
 
